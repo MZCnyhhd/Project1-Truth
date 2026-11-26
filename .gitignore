@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Runtime data (videos and cookies must never be committed)
+downloads/
+data/
+
+# Local agent metadata
+.workbuddy/
+
+# OS / editor
+Thumbs.db
+.DS_Store
+.idea/
+.vscode/
+
+# local experiment logs
+logs/

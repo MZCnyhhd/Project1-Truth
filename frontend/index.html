@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Truth</title>
+  <link rel="stylesheet" href="/app/styles.css?v=20261126j" />
+</head>
+<body>
+  <main class="shell">
+    <div class="topbar">
+      <div>
+        <h1>Truth</h1>
+        <p class="sub">粘贴链接后自动识别平台，需要登录的平台会提示扫码。</p>
+      </div>
+      <button id="history-btn" class="btn-ghost">历史记录</button>
+    </div>
+
+    <div class="input-row">
+      <input id="url-input" type="text" placeholder="粘贴视频链接或分享文案" autocomplete="off" />
+      <button id="download-btn" disabled>下载</button>
+    </div>
+
+    <div class="platform-bar">
+      <span id="auth-dot" class="dot offline"></span>
+      <span id="platform-text">粘贴链接后自动识别平台</span>
+      <button id="login-btn" class="btn-small hidden">扫码登录</button>
+    </div>
+
+    <div id="login-panel" class="login-panel hidden">
+      <div id="login-status">正在打开浏览器…</div>
+      <div class="login-actions">
+        <span id="login-tip" class="hint">在弹出的 Edge 窗口里扫码</span>
+        <button id="login-cancel-btn" class="btn-link">取消</button>
+      </div>
+    </div>
+
+    <div id="result" class="result hidden">
+      <div class="result-head">
+        <span id="status-text">准备中…</span>
+        <span id="status-tag" class="tag">排队中</span>
+      </div>
+      <div class="progress-track">
+        <div id="progress-fill" class="progress-fill"></div>
+      </div>
+      <div id="detail" class="detail"></div>
+      <video id="player" class="player hidden" controls playsinline preload="metadata"></video>
+
+      <div id="result-actions" class="result-actions hidden">
+        <button id="explain-btn" class="btn-ghost btn-explain">解释视频</button>
+      </div>
+
+      <div id="explain-box" class="explain-box hidden">
+        <div class="explain-head">
+          <span>视频文字</span>
+          <button id="explain-copy" class="btn-link">复制</button>
+        </div>
+        <pre id="explain-text"></pre>
+      </div>
+
+      <div id="error" class="error hidden"></div>
+    </div>
+  </main>
+
+  <div id="history-mask" class="drawer-mask hidden"></div>
+  <aside id="history-drawer" class="drawer hidden">
+    <div class="drawer-head">
+      <h3>历史记录</h3>
+      <button id="history-close" class="btn-link">关闭</button>
+    </div>
+    <div id="history-list" class="history-list"></div>
+  </aside>
+
+  <div id="toast" class="toast hidden"></div>
+  <script src="/app/app.js?v=20261126j"></script>
+</body>
+</html>
