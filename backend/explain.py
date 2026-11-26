@@ -6,6 +6,7 @@ why instead of showing a blank box.
 """
 
 import subprocess
+import time
 
 from . import ocr, transcribe
 
@@ -51,6 +52,7 @@ def _looks_like_hallucination(text: str, duration: float) -> bool:
 
 
 def explain_video(path: str) -> dict:
+    started = time.time()
     duration = _duration(path)
 
     screen = {"subtitle": "", "other": ""}
@@ -63,39 +65,39 @@ def explain_video(path: str) -> dict:
     other = (screen.get("other") or "").strip()
 
     if len(subtitle) >= _MIN_CHARS:
-        return {
+        payload = {
             "text": subtitle,
             "source": "subtitle",
-            "duration": duration,
             "screen_text": subtitle,
             "speech_text": "",
         }
-
-    if len(other) >= _MIN_CHARS:
-        return {
+    elif len(other) >= _MIN_CHARS:
+        payload = {
             "text": other,
             "source": "screen",
-            "duration": duration,
             "screen_text": other,
             "speech_text": "",
         }
-
-    speech = ""
-    try:
-        speech = transcribe.transcribe_file(path)
-    except Exception:
+    else:
         speech = ""
-    if _looks_like_hallucination(speech, duration):
-        speech = ""
-    speech = speech.strip()
+        try:
+            speech = transcribe.transcribe_file(path)
+        except Exception:
+            speech = ""
+        if _looks_like_hallucination(speech, duration):
+            speech = ""
+        speech = speech.strip()
 
-    if len(speech) >= _MIN_CHARS:
-        return {
+        if len(speech) < _MIN_CHARS:
+            raise ExplainError("提取失败：无字幕无语音")
+
+        payload = {
             "text": speech,
             "source": "speech",
-            "duration": duration,
             "screen_text": "",
             "speech_text": speech,
         }
 
-    raise ExplainError("提取失败：无字幕无语音")
+    payload["duration"] = duration
+    payload["elapsed"] = round(time.time() - started, 1)
+    return payload

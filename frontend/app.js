@@ -78,6 +78,7 @@ function resetMedia() {
   $("#result-actions").classList.add("hidden");
   $("#explain-box").classList.add("hidden");
   $("#explain-text").textContent = "";
+  $("#explain-title").textContent = "视频文字";
   currentFilepath = "";
 }
 
@@ -99,6 +100,7 @@ function showFile(filepath, title) {
 
   $("#result-actions").classList.remove("hidden");
   $("#explain-box").classList.add("hidden");
+  $("#explain-title").textContent = "视频文字";
 }
 
 async function refreshAuth() {
@@ -162,6 +164,9 @@ async function poll() {
       pollTimer = null;
       updateControls();
       showFile(task.filepath, task.title);
+      if (task.elapsed) {
+        $("#status-tag").textContent = `完成 · ${task.elapsed}s`;
+      }
     } else if (task.status === "error") {
       clearInterval(pollTimer);
       pollTimer = null;
@@ -325,6 +330,7 @@ $("#explain-btn").addEventListener("click", async () => {
   button.disabled = true;
   button.textContent = "转写中…";
   $("#explain-box").classList.remove("hidden");
+  $("#explain-title").textContent = "视频文字";
   $("#explain-text").textContent = "正在识别画面文字和语音，长视频可能需要一分钟…";
   try {
     const data = await api("/api/explain", {
@@ -334,6 +340,7 @@ $("#explain-btn").addEventListener("click", async () => {
     const node = $("#explain-text");
     node.style.color = "";
     node.textContent = data.text || "";
+    $("#explain-title").textContent = data.elapsed ? `视频文字 · ${data.elapsed}s` : "视频文字";
   } catch (error) {
     const node = $("#explain-text");
     node.style.color = "var(--danger)";

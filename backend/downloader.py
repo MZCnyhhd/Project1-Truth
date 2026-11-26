@@ -1,6 +1,7 @@
 import asyncio
 import shutil
 import threading
+import time
 import uuid
 from datetime import datetime
 from pathlib import Path
@@ -33,6 +34,15 @@ def _update(task_id: str, **patch: Any) -> None:
             return
         task.update(patch)
         task["updated_at"] = _now()
+
+
+def _elapsed(task_id: str) -> float:
+    with _LOCK:
+        task = TASKS.get(task_id) or {}
+        started = task.get("started_at")
+    if not started:
+        return 0.0
+    return round(time.time() - started, 1)
 
 
 def _base_opts() -> dict[str, Any]:
@@ -110,6 +120,7 @@ async def _run_ytdlp(task_id: str, url: str) -> None:
         title=title,
         filepath=str(filepath),
         message="",
+        elapsed=_elapsed(task_id),
     )
     save_item(
         {
@@ -151,6 +162,7 @@ async def _run_download(task_id: str, url: str) -> None:
             filepath=result["filepath"],
             thumbnail=result.get("thumbnail") or "",
             message="",
+            elapsed=_elapsed(task_id),
         )
         save_item(
             {
@@ -188,6 +200,8 @@ def start_download(url: str) -> dict[str, Any]:
         "filepath": "",
         "thumbnail": "",
         "message": "",
+        "elapsed": 0,
+        "started_at": time.time(),
         "created_at": _now(),
         "updated_at": _now(),
     }
